@@ -163,7 +163,7 @@ label L label U label H label END
 : end? 	( u -- u) dup 0 = if bye then ;
 : comment ( c-addr u -- c-addr u) ." 	;;" | 2dup type | cr ;
 : main 	$ to Z 	0 | 0 | 3 33 + subleq, \ init Z and jump to compiled code
-	." 	times 32" data type n"  0" | 32 $+ current-addr ! \ allocate dstack
+	." 	times 32 " data type n"  0" | 32 $+ current-addr ! \ allocate dstack
 	$ to DSP | -32 $+ negate data, \ allocate and init data stack pointer
 	begin read end? comment comp again ;
 
