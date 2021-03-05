@@ -1,4 +1,5 @@
 warnings off
+next-arg 2constant ARCH \ given by the Makefile. 0 0 if none given
 : n" POSTPONE ." POSTPONE cr ; immediate
 : | ; \ used for code division/making code easier to read
 : label 0 [compile] value ;
@@ -6,8 +7,12 @@ warnings off
 \ subleq assembler, outputs NASM format data
 variable current-addr | 0 current-addr !
 : $ current-addr @ ;  | : $+ $ + ; | : .$ ." 	;addr: " $ . cr ;
-: data, 	." dq " . cr | $ 1+  current-addr ! ;
+
+ARCH s" AMD64" compare [if] s" dd" 2constant data [else] s" dq" 2constant data [then]
+: data, 9 emit data type space . cr | $ 1+  current-addr ! ;
+
 : subleq, ( A B C --) .$ | swap rot | 3 0 DO data, LOOP | cr ;
+
 
 label Z \ cell to be used as a zero
 label DSP \ data stack pointer 
@@ -15,7 +20,6 @@ label DSP \ data stack pointer
 : nxt 	3 $+ ; \ next instruction
 
 : init-code
-	n" BITS 64" 
 	n" global code"
 	n" section .data"
 	." code:" ;
@@ -159,7 +163,7 @@ label L label U label H label END
 : end? 	( u -- u) dup 0 = if bye then ;
 : comment ( c-addr u -- c-addr u) ." 	;;" | 2dup type | cr ;
 : main 	$ to Z 	0 | 0 | 3 33 + subleq, \ init Z and jump to compiled code
-	n" 	times 32 dq 0" | 32 $+ current-addr ! \ allocate dstack
+	." 	times 32" data type n"  0" | 32 $+ current-addr ! \ allocate dstack
 	$ to DSP | -32 $+ negate data, \ allocate and init data stack pointer
 	begin read end? comment comp again ;
 
