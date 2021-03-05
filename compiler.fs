@@ -6,8 +6,8 @@ warnings off
 \ subleq assembler, outputs NASM format data
 variable current-addr | 0 current-addr !
 : $ current-addr @ ;  | : $+ $ + ; | : .$ ." 	;addr: " $ . cr ;
-: dq 	." 	dq " . cr | $ 1+  current-addr ! ;
-: subleq, ( A B C --) .$ | swap rot | 3 0 DO dq LOOP | cr ;
+: data, 	." dq " . cr | $ 1+  current-addr ! ;
+: subleq, ( A B C --) .$ | swap rot | 3 0 DO data, LOOP | cr ;
 
 label Z \ cell to be used as a zero
 label DSP \ data stack pointer 
@@ -37,8 +37,8 @@ label DAT label INC label END
 	INC  	| DSP 	| nxt 	subleq,
 
 	0 	| 0 	| END 	subleq,
-	r> negate dq \ DAT
-	1 dq ; \ INC
+	r> negate data, \ DAT
+	1 data, ; \ INC
 
 label DEC label END
 : comp-emit
@@ -51,7 +51,7 @@ label DEC label END
 	0 	| -1 	| nxt 	subleq, 
 
 	0 	| 0 	| END 	subleq,
-	-1 dq ; \ DEC
+	-1 data, ; \ DEC
 
 label DEC label INC label END
 : comp--
@@ -68,8 +68,8 @@ label DEC label INC label END
 	0 	| 0 	| nxt 	subleq,
 	
 	0 	| 0 	| END 	subleq,
-	-1 dq \ DEC
-	1 dq ; \ INC
+	-1 data, \ DEC
+	1 data, ; \ INC
 
 label DEC label INC label T1 label T2 label END
 : comp-swap
@@ -115,10 +115,10 @@ label DEC label INC label T1 label T2 label END
 
 	
 	0 	| 0 	| END 	subleq,
-	-1 dq \ DEC
-	1 dq \ INC
-	0 dq \ T1
-	0 dq \ T2
+	-1 data, \ DEC
+	1 data, \ INC
+	0 data, \ T1
+	0 data, \ T2
 	;
 
 : comp-negate
@@ -152,15 +152,15 @@ label L label U label H label END
 	U  	| 4 $+  | 0  	subleq,
 	Z  	| H  	| END 	subleq,
 	Z  	| Z  	| L  	subleq,
-	-1 dq \ U
-	'h dq 'e dq 'l dq 'l dq 'o dq 10 dq 0 dq ; \ H
+	-1 data, \ U
+	'h data, 'e data, 'l data, 'l data, 'o data, 10 data, 0 data, ; \ H
 
 : read 	( -- c-addr u) POSTPONE parse-name ; immediate
 : end? 	( u -- u) dup 0 = if bye then ;
 : comment ( c-addr u -- c-addr u) ." 	;;" | 2dup type | cr ;
 : main 	$ to Z 	0 | 0 | 3 33 + subleq, \ init Z and jump to compiled code
 	n" 	times 32 dq 0" | 32 $+ current-addr ! \ allocate dstack
-	$ to DSP | -32 $+ negate dq \ allocate and init data stack pointer
+	$ to DSP | -32 $+ negate data, \ allocate and init data stack pointer
 	begin read end? comment comp again ;
 
 \ read in the file to compile
