@@ -1,0 +1,8 @@
+.*
+*.o
+*.out
+*~
+compiled.asm
+
+#track this file
+!.gitignore
