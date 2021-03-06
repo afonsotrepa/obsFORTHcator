@@ -130,22 +130,9 @@ label DEC label INC label T1 label T2 label END
 : comp-negate
 	s" 0" handle-literal | comp-swap comp-- ;
 
-
-: comp 	( c-addr u --) \ find word and execute compile function
-	2dup   C" comp-" PAD 6 chars cmove
-	dup 5 chars +   PAD c!
-	PAD 6 chars +   swap cmove
-	PAD find
-	0 <> if execute 2drop
-	else drop handle-literal then ;
-
-
 : comp-bye 0 | 0 | -1 subleq, ;
 
 : comp-test
-	\ 6 $+  | 7 $+  | $ 	subleq,
-	\ 0 	| 0 	| -1  	subleq,
-	\ -1 | -100000000 | 0 	subleq, 
 	 9 $+ 	| -1   	| 0     subleq,
 	 3 $+ 	| 4 $+ 	| -3 $+ subleq,
 	 1    	| 0    	| 0     subleq,
@@ -161,10 +148,19 @@ label L label U label H label END
 	-1 data, \ U
 	'h data, 'e data, 'l data, 'l data, 'o data, 10 data, 0 data, ; \ H
 
+
+: comp 	( c-addr u --) \ find word and execute compile function
+	2dup   C" comp-" PAD 6 chars cmove
+	dup 5 chars +   PAD c!
+	PAD 6 chars +   swap cmove
+	PAD find
+	0 <> if execute 2drop
+	else drop handle-literal then ;
+
 : read 	( -- c-addr u) POSTPONE parse-name ; immediate
 : end? 	( u -- u) dup 0 = if bye then ;
 : comment ( c-addr u -- c-addr u) ." 	;;" | 2dup type | cr ;
-: main 	$ to Z 	0 | 0 | 3 33 + subleq, \ init Z and jump to compiled code
+: main 	$ to Z 	0 | 0 | 36 subleq, \ init Z and jump to compiled code
 	." 	times 32 " data n"  0" | 32 $+ current-addr ! \ allocate dstack
 	$ to DSP | -32 $+ negate data, \ allocate and init data stack pointer
 	begin read end? comment comp again ;
