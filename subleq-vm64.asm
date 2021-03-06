@@ -46,6 +46,7 @@ _start: ;get input from command line arguments
 
 	;jump to C
 .jmp: 	mov rdi, [rdi+16]
+	;check for exit inst
 	cmp rdi, -1
 	je .bye
 
@@ -54,8 +55,8 @@ _start: ;get input from command line arguments
 	jmp .loop
 
 	;called when C == -1 and leq == true
-.bye: 	mov rax, 60 ;sys_exit
-	mov rdi, 0 ;exit code
+.bye: 	mov rdi, rax ;exit code (1st args value)
+	mov rax, 60 ;sys_exit
 	syscall
 
 .emit: 	push rdi ;save rdi
