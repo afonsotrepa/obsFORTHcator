@@ -1,2 +1,2 @@
 -65 negate emit
-bye
+0  bye

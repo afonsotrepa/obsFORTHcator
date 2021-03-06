@@ -130,7 +130,14 @@ label DEC label INC label T1 label T2 label END
 : comp-negate
 	s" 0" handle-literal | comp-swap comp-- ;
 
-: comp-bye 0 | 0 | -1 subleq, ;
+: comp-bye \ exit and return value on stack
+	\ decrement stack
+	DEC  	| DSP 	| nxt 	subleq,
+	\ write pointer
+	DSP 	| 6 $+ 	| nxt subleq,
+	DSP 	| 4 $+ 	| nxt subleq,
+	\ exit
+	0 	| 0 	| -1 subleq, ;
 
 : comp-test
 	 9 $+ 	| -1   	| 0     subleq,
