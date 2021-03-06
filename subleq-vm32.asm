@@ -46,6 +46,7 @@ _start: ;get input from command line arguments
 
 	;jump to C
 .jmp: 	mov edi, [edi+8]
+	;check for exit inst
 	cmp edi, -1
 	je .bye
 
@@ -54,8 +55,8 @@ _start: ;get input from command line arguments
 	jmp .loop
 
 	;called when C == -1 and leq == true
-.bye: 	mov eax, 1 ;sys_exit
-	mov ebx, 0 ;exit code
+.bye: 	mov ebx, eax ;exit code (1st args value)
+	mov eax, 1 ;sys_exit
 	int 0x80
 
 .emit: 	push eax ;write value to emit on the stack
