@@ -8,8 +8,10 @@ next-arg 2constant ARCH \ given by the Makefile. 0 0 if none given
 variable current-addr | 0 current-addr !
 : $ current-addr @ ;  | : $+ $ + ; | : .$ ." 	;addr: " $ . cr ;
 
-ARCH s" AMD64" compare [if] s" dd" 2constant data [else] s" dq" 2constant data [then]
-: data, 9 emit data type space . cr | $ 1+  current-addr ! ;
+ARCH s" AMD64" compare [if] s" dd" [else] s" dq" [then]
+2>r : data [ 2r> ] 2literal type ;
+9 constant tab
+: data, tab emit data space . cr | $ 1+  current-addr ! ;
 
 : subleq, ( A B C --) .$ | swap rot | 3 0 DO data, LOOP | cr ;
 
@@ -163,7 +165,7 @@ label L label U label H label END
 : end? 	( u -- u) dup 0 = if bye then ;
 : comment ( c-addr u -- c-addr u) ." 	;;" | 2dup type | cr ;
 : main 	$ to Z 	0 | 0 | 3 33 + subleq, \ init Z and jump to compiled code
-	." 	times 32 " data type n"  0" | 32 $+ current-addr ! \ allocate dstack
+	." 	times 32 " data n"  0" | 32 $+ current-addr ! \ allocate dstack
 	$ to DSP | -32 $+ negate data, \ allocate and init data stack pointer
 	begin read end? comment comp again ;
 
